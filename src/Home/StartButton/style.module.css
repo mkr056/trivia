@@ -1,0 +1,24 @@
+.startButton {
+  color: white;
+  width: 100%;
+  font-size: 14px;
+  text-transform: uppercase;
+  border: 2px solid var(--dark-green);
+  border-radius: 3px;
+  padding: 4px 0;
+  background-color: var(--dark-green);
+}
+
+.startButton:hover {
+  border-color: var(--dark-green);
+  background-color: white;
+  color: var(--dark-green);
+}
+
+@media (min-width: 768px) {
+  .startButton {
+    width: initial;
+    font-size: initial;
+    padding: 8px 32px;
+  }
+}

@@ -1,0 +1,15 @@
+.highScore {
+  font-size: 14px;
+  font-weight: 700;
+  position: absolute;
+  top: 16px;
+  right: 0;
+  border-bottom: 2px solid var(--dark-green);
+}
+
+@media (min-width: 768px) {
+  .highScore {
+    font-size: initial;
+    font-weight: 500;
+  }
+}

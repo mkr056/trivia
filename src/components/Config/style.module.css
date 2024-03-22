@@ -1,0 +1,37 @@
+.heading {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.control {
+  height: 35px;
+  border-radius: 3px;
+  padding: 0 16px 0 8px;
+  border: 1px solid black;
+}
+
+.control:focus-visible {
+  outline: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.control[type='number']::-webkit-outer-spin-button,
+.control[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.control[type='number'] {
+  -moz-appearance: textfield;
+}
+
+@media (min-width: 576px) {
+  .heading {
+    margin-bottom: 24px;
+  }
+
+  .control {
+    height: 45px;
+  }
+}

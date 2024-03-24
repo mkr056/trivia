@@ -20,15 +20,13 @@ const types = [
 ];
 
 function getPreparedConfig(config) {
-  const {amount, category, difficulty, type} = config;
-  const newConfig = {amount, category, difficulty, type};
-  return Object.keys(newConfig).reduce((acc, key) => {
-    if (newConfig[key] && newConfig[key] !== 'any') acc[key] = newConfig[key];
+  return Object.keys(config).reduce((acc, key) => {
+    if (config[key] && config[key] !== 'any') acc[key] = config[key];
     return acc;
   }, {});
 }
 
-export default function Config() {
+export default function Config({setQueryString = f => f, setCurrentQuestion = f => f}) {
   const [config, setConfig] = useState({
     amount: 1,
     category: 'any',
@@ -38,12 +36,12 @@ export default function Config() {
     godMode: false,
   });
 
-  const [categories, setCategories] = useState([{id: 'any', name: 'Any Category'}])
+  const [categories, setCategories] = useState([{id: 'any', name: 'Any Category'}]);
 
   useEffect(() => {
     sendGetRequest(API_CATEGORY)
       .then(data => {
-        setCategories((prevCategories) => [...prevCategories, ...data['trivia_categories']]);
+        setCategories([...categories, ...data['trivia_categories']]);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -54,10 +52,12 @@ export default function Config() {
   function confirmConfig() {
     const preparedConfig = getPreparedConfig(config);
     const queryString = getQueryStringFromObject(preparedConfig);
+    setQueryString(queryString);
     const url = `${API}?${queryString}`;
     sendGetRequest(url)
       .then(data => {
-        console.log(data);
+        const question = data['results'][0];
+        setCurrentQuestion(question);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -90,7 +90,7 @@ export default function Config() {
           onBlur={onBlurNumber}
           onChange={(e) => {
             onChangeConfig('number', e.target.value);
-          }} />
+          }}/>
       </div>
 
       <div className='d-flex flex-column gap-1'>
@@ -136,15 +136,15 @@ export default function Config() {
         <input
           type='checkbox'
           id='god-mode'
-          value={config.godMode}
+          value={String(config.godMode)}
           onChange={(e) => {
             onChangeConfig('godMode', e.target.checked);
-          }} />
+          }}/>
         <label htmlFor='god-mode'>God Mode</label>
       </div>
 
       <div className='d-flex justify-content-center'>
-        <Button title='Confirm!' onClick={() => setTimeout(confirmConfig, 200)} />
+        <Button title='Confirm!' onClick={() => setTimeout(confirmConfig, 200)}/>
       </div>
 
     </div>

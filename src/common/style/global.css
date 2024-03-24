@@ -3,9 +3,21 @@
 :root {
   --peach: #EBC49F;
   --dark-green: #597E52;
+  --light-green: #9FBB73;
+  --red: #D04848;
+  --yellow: #FAEF9B;
+  --orange: #EE9322;
 }
 
 body {
   font-family: Sen, sans-serif;
   background-color: var(--peach);
+}
+
+body.correct {
+  background-color: var(--light-green);
+}
+
+body.wrong {
+  background-color: var(--red);
 }

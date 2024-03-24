@@ -1,6 +1,10 @@
 import * as s from './style.module.css';
 
-export default function PopupContainer({isOpen = false, onClose = () => {}, children}) {
+export default function PopupContainer({
+  isOpen = false,
+  onClose = () => {},
+  children
+}) {
   const popupCN = [s.popup];
   if (isOpen) popupCN.push('open');
 

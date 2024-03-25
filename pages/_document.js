@@ -1,5 +1,11 @@
 import {Html, Head, Main, NextScript} from 'next/document';
 
+/**
+ * A custom Document component is used to update the <html> and <body> tags used to render a Page.
+ * @returns {JSX.Element} The custom Document component (custom Html).
+ */
+
+// I override the default behaviour in order to add Bootstrap via a CDN link.
 export default function Document() {
   return (
     <Html lang='en'>

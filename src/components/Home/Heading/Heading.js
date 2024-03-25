@@ -1,5 +1,9 @@
 import * as s from './style.module.css';
 
+/**
+ * The heading component displayed on the Home page.
+ * @returns {JSX.Element} The heading component.
+ */
 export default function Heading() {
   return (
     <div className={`d-flex flex-column align-items-center gap-1 ${s.wrap}`}>

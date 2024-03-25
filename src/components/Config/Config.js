@@ -1,25 +1,32 @@
-import {useEffect, useState} from 'react';
+import {useState, useEffect} from 'react';
 import {API, API_CATEGORY} from '../../../config';
-import Button from '@/common/components/Button/Button';
 import {getQueryStringFromObject, sendGetRequest} from '@/common/helpers/helpers';
+import Button from '@/common/components/Button/Button';
 import * as s from './style.module.css';
 
 const DEFAULT_NUMBER = '10';
 
-const difficulties = [
+const difficultyOptions = [
   {id: 'any', name: 'Any Difficulty'},
   {id: 'easy', name: 'Easy'},
   {id: 'medium', name: 'Medium'},
   {id: 'hard', name: 'Hard'}
 ];
 
-const types = [
+const typeOptions = [
   {id: 'any', name: 'Any Type'},
   {id: 'multiple', name: 'Multiple Choice'},
   {id: 'boolean', name: 'True / False'}
 ];
 
-function getPreparedConfig(config) {
+/**
+ * Prepares the config object for conversion to a query string.
+ * @param config - The config object.
+ * @returns {Object} The prepared config object.
+ */
+
+// This function is required due to strict api rules specified by the server, otherwise requests may result in errors.
+function getPreparedConfig(config = {}) {
   return Object.keys(config).reduce((acc, key) => {
     if (config[key] && config[key] !== 'any') acc[key] = config[key];
     return acc;
@@ -28,34 +35,40 @@ function getPreparedConfig(config) {
 
 export default function Config({setQueryString = f => f, setCurrentQuestion = f => f}) {
   const [config, setConfig] = useState({
-    amount: 1,
+    amount: 1, // refers to the number of questions to be requested from the server (does not change).
     category: 'any',
     difficulty: 'any',
     type: 'any',
-    number: DEFAULT_NUMBER,
+    number: DEFAULT_NUMBER, // refers to the number of questions that will be asked to the user (based on user preference)
     godMode: false,
   });
 
-  const [categories, setCategories] = useState([{id: 'any', name: 'Any Category'}]);
+  const [categoryOptions, setCategoryOptions] = useState([{
+    id: 'any',
+    name: 'Any Category'
+  }]);
 
+  // Instead of static category data, categories are fetched from the server on the first render of the component.
   useEffect(() => {
     sendGetRequest(API_CATEGORY)
-      .then(data => {
-        setCategories([...categories, ...data['trivia_categories']]);
+      .then((data) => {
+        setCategoryOptions([...categoryOptions, ...data['trivia_categories']]);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
   }, []);
 
-
+  /**
+   * Processes the current config in order to send request and finally fetches the first question.
+   */
   function confirmConfig() {
     const preparedConfig = getPreparedConfig(config);
     const queryString = getQueryStringFromObject(preparedConfig);
     setQueryString(queryString);
     const url = `${API}?${queryString}`;
     sendGetRequest(url)
-      .then(data => {
+      .then((data) => {
         const question = data['results'][0];
         setCurrentQuestion(question);
       })
@@ -64,12 +77,32 @@ export default function Config({setQueryString = f => f, setCurrentQuestion = f 
       });
   }
 
+  /**
+   * Updates the config object.
+   * @param {string} key - The key (property) of the object to be changed.
+   * @param {any} value - The new value of the specified key.
+   */
   function onChangeConfig(key, value) {
     const newConfig = {...config, [key]: value};
+    /*
+    If the user enables the godMode feature, then set the value of number to any, so it
+    is removed from the config during the preparation process. If the user disables the godMode feature,
+    then reset the value of number to the default, which is 10.
+    */
     if (key === 'godMode') newConfig.number = value ? 'any' : DEFAULT_NUMBER;
     setConfig(newConfig);
   }
 
+  /**
+   * Validates user input for the number field.
+   */
+
+  /*
+  When the input field for the number of questions loses focus, a series of checks are applied,
+  in order to make sure that the value is an actual number and is greater than or equal to 1.
+  If the input is valid, the update the config object with the corresponding value, otherwise
+  reset to default.
+  */
   function onBlurNumber() {
     const number = parseInt(config.number);
     const isValidNumber = !isNaN(number) && number >= 1;
@@ -101,8 +134,8 @@ export default function Config({setQueryString = f => f, setCurrentQuestion = f 
           onChange={(e) => {
             onChangeConfig('category', e.target.value);
           }}>
-          {categories.map((category, idx) =>
-            <option key={idx} value={category.id}>{category.name}</option>)}
+          {categoryOptions.map((option, idx) =>
+            <option key={idx} value={option.id}>{option.name}</option>)}
         </select>
       </div>
 
@@ -114,8 +147,8 @@ export default function Config({setQueryString = f => f, setCurrentQuestion = f 
           onChange={(e) => {
             onChangeConfig('difficulty', e.target.value);
           }}>
-          {difficulties.map((difficulty, idx) =>
-            <option key={idx} value={difficulty.id}>{difficulty.name}</option>)}
+          {difficultyOptions.map((option, idx) =>
+            <option key={idx} value={option.id}>{option.name}</option>)}
         </select>
       </div>
 
@@ -127,8 +160,8 @@ export default function Config({setQueryString = f => f, setCurrentQuestion = f 
           onChange={(e) => {
             onChangeConfig('type', e.target.value);
           }}>
-          {types.map((type, idx) =>
-            <option key={idx} value={type.id}>{type.name}</option>)}
+          {typeOptions.map((option, idx) =>
+            <option key={idx} value={option.id}>{option.name}</option>)}
         </select>
       </div>
 
@@ -144,6 +177,7 @@ export default function Config({setQueryString = f => f, setCurrentQuestion = f 
       </div>
 
       <div className='d-flex justify-content-center'>
+        {/*This timeout is required in order for the user to notice the consequences of the onBlurNumber function*/}
         <Button title='Confirm!' onClick={() => setTimeout(confirmConfig, 200)}/>
       </div>
 

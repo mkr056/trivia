@@ -1,5 +1,5 @@
 ### Installation instructions:
-1. Clone this repository: navigate to desired directory and run `git clone https://github.com/mkr056/trivia.git`.
+1. Clone this repository: Open Terminal (Command Prompt), navigate to desired directory and run `git clone https://github.com/mkr056/trivia.git`.
 
 ### Run instructions:
 1. Make sure **Node.js 18.17 or later** is installed on your machine, otherwise download it from [the official website](https://nodejs.org/en/download).
